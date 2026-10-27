@@ -1,0 +1,41 @@
+{
+  "id": "video",
+  "version": "0.1.0",
+  "coreVersion": "0.1.0",
+  "apiVersion": 1,
+  "entry": "src/comfy-video.mjs",
+  "files": [
+    {
+      "path": "src/comfy-video.mjs",
+      "sha256": "0e3759e29c1b03e99435ce2b438253221127f0332279256b0c707dfd50511c0c"
+    },
+    {
+      "path": "video-workflow/qqbot-video.api.json",
+      "sha256": "4f0f1ccff2e2e5caf030e919ae57c77e388acfe493a4d0b1dbd361231bbe351e"
+    },
+    {
+      "path": "model-manifest.json",
+      "sha256": "22c3fee558744ccce48fa829d77ed37197c846d643afeb33231ec7657bf25a56"
+    },
+    {
+      "path": "tests/test-comfy-video.mjs",
+      "sha256": "248fd58a2d24bb27404cdbdc5e9086d6452401a10fa540e31edc1b33911df24b"
+    },
+    {
+      "path": "tests/model-sources.test.mjs",
+      "sha256": "d39bb3949d77d61dfb9bcf4ee3db61653bfe6401a787b13979387125f4407e1c"
+    },
+    {
+      "path": "README.md",
+      "sha256": "6e17004513e3b5932b1e0f3e0cbace2e41580194233569299d4350398d27122b"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "3d3577ffdda5eba8669b06d883928f4710b25134957ea6aaff6ce5d61ee11df8"
+    },
+    {
+      "path": "NOTICE.md",
+      "sha256": "bf4dc2400d43b8326813827e640c4b034aca73e2c59252377e20a751740625bc"
+    }
+  ]
+}

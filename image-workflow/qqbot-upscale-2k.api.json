@@ -1,0 +1,53 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "dsh_qq_img2img/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.png"
+    }
+  },
+  "3": {
+    "class_type": "UpscaleModelLoader",
+    "inputs": {
+      "model_name": "4x_IllustrationJaNai_V3detail_DAT2_28k_bf16.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "DshIllustrationUpscale",
+    "inputs": {
+      "upscale_model": [
+        "3",
+        0
+      ],
+      "image": [
+        "1",
+        0
+      ],
+      "scale": 2,
+      "tile": 256,
+      "processing": "full-first"
+    }
+  },
+  "5": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "4",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 1402,
+      "height": 2048,
+      "crop": "disabled"
+    }
+  },
+  "12": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "5",
+        0
+      ],
+      "filename_prefix": "dsh_qq/qqbot-upscale"
+    }
+  }
+}

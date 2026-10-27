@@ -1,0 +1,48 @@
+name: Windows offline checks
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: qq-bridge-enhanced-v1.0.0/package-lock.json
+      - run: npm ci --prefix qq-bridge-enhanced-v1.0.0
+      - run: npm test
+      - run: if (Test-Path addons/video/manifest.json) { npm run test:video }
+      - run: npm run check
+
+  publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Publish initial 0.1.0 release once
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          if ($version -ne '0.1.0') { exit 0 }
+          gh release view "v$version" --repo "${{ github.repository }}" *> $null
+          if ($LASTEXITCODE -eq 0) { exit 0 }
+          npm ci --prefix qq-bridge-enhanced-v1.0.0 --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm run release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm run release:video
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm run release:source
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $assets = @(Get-ChildItem -LiteralPath dist -File | ForEach-Object { $_.FullName })
+          gh release create "v$version" --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "kw-dsh-qqbot $version" --notes-file RELEASE_NOTES.md @assets
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

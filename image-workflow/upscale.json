@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "model": "4x_IllustrationJaNai_V3detail_DAT2_28k_bf16.safetensors",
+  "tile": 256,
+  "targets": [
+    2048,
+    4096
+  ],
+  "source": "https://github.com/the-database/MangaJaNai/releases/tag/3.0.0",
+  "processing": "full-first"
+}

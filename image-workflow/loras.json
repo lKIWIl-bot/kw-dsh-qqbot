@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "bases": {
+    "anima": {
+      "family": "anima",
+      "label": "Anima",
+      "unet": "anima-base-v1.0.safetensors",
+      "clip": "qwen_3_06b_base.safetensors",
+      "vae": "qwen_image_vae.safetensors"
+    }
+  },
+  "loras": [],
+  "categories": {},
+  "descriptions": {},
+  "details": {}
+}

@@ -1,0 +1,30 @@
+{
+  "name": "kw-dsh-qqbot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "description": "基于 DeepSeek Harness、NapCat 和 ComfyUI 的 QQ 机器人，支持聊天、Anima 生图、LoRA、高清放大、额度与队列管理；图生视频通过可选扩展接入，支持 Windows 本地部署。",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "setup": "node scripts/manage.mjs setup",
+    "doctor": "node scripts/manage.mjs doctor",
+    "loras": "node scripts/manage.mjs loras",
+    "start": "node scripts/manage.mjs start",
+    "stop": "node scripts/manage.mjs stop",
+    "status": "node scripts/manage.mjs status",
+    "logs": "node scripts/manage.mjs logs",
+    "console": "node scripts/manage.mjs console",
+    "setup:dsh": "node scripts/manage.mjs setup-dsh",
+    "test": "node scripts/test-public.mjs",
+    "check": "node scripts/release.mjs --check",
+    "release": "node scripts/release.mjs",
+    "models": "node scripts/models.mjs",
+    "extensions": "node scripts/extensions.mjs",
+    "release:video": "node scripts/release.mjs --addon video",
+    "test:video": "node scripts/test-video.mjs",
+    "release:source": "node scripts/release.mjs --source"
+  }
+}

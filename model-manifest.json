@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "verifiedAt": "2026-10-27",
+  "verification": "模型仓库元数据与文件SHA256已核对；没有下载或实测全部权重。",
+  "models": [
+    {
+      "filename": "anima-base-v1.0.safetensors",
+      "target": "diffusion_models/anima-base-v1.0.safetensors",
+      "features": [
+        "image"
+      ],
+      "role": "model",
+      "repo": "circlestone-labs/Anima",
+      "revision": "f973fc41ec7545364ac9776c2440285f43ff2a30",
+      "url": "https://huggingface.co/circlestone-labs/Anima/resolve/f973fc41ec7545364ac9776c2440285f43ff2a30/split_files/diffusion_models/anima-base-v1.0.safetensors",
+      "page": "https://huggingface.co/circlestone-labs/Anima",
+      "bytes": 4182218328,
+      "sha256": "bd43b7cffe1ed1153d9c41e7beb2f18cb1273eafbaa3af3edd6a173dc90a006e",
+      "access": "public-at-verification",
+      "license": "other"
+    },
+    {
+      "filename": "qwen_3_06b_base.safetensors",
+      "target": "text_encoders/qwen_3_06b_base.safetensors",
+      "features": [
+        "image"
+      ],
+      "role": "model",
+      "repo": "circlestone-labs/Anima",
+      "revision": "f973fc41ec7545364ac9776c2440285f43ff2a30",
+      "url": "https://huggingface.co/circlestone-labs/Anima/resolve/f973fc41ec7545364ac9776c2440285f43ff2a30/split_files/text_encoders/qwen_3_06b_base.safetensors",
+      "page": "https://huggingface.co/circlestone-labs/Anima",
+      "bytes": 1192135096,
+      "sha256": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba",
+      "access": "public-at-verification",
+      "license": "other"
+    },
+    {
+      "filename": "qwen_image_vae.safetensors",
+      "target": "vae/qwen_image_vae.safetensors",
+      "features": [
+        "image"
+      ],
+      "role": "model",
+      "repo": "circlestone-labs/Anima",
+      "revision": "f973fc41ec7545364ac9776c2440285f43ff2a30",
+      "url": "https://huggingface.co/circlestone-labs/Anima/resolve/f973fc41ec7545364ac9776c2440285f43ff2a30/split_files/vae/qwen_image_vae.safetensors",
+      "page": "https://huggingface.co/circlestone-labs/Anima",
+      "bytes": 253806246,
+      "sha256": "a70580f0213e67967ee9c95f05bb400e8fb08307e017a924bf3441223e023d1f",
+      "access": "public-at-verification",
+      "license": "other"
+    },
+    {
+      "filename": "4x_IllustrationJaNai_V3detail_DAT2_28k_bf16.safetensors",
+      "target": "upscale_models/4x_IllustrationJaNai_V3detail_DAT2_28k_bf16.safetensors",
+      "features": [
+        "upscale"
+      ],
+      "role": "model",
+      "repo": "easygoing0114/AI_upscalers",
+      "revision": "9a3087ad5adc4f52e9de3e19b75c4c5df3efb56b",
+      "url": "https://huggingface.co/easygoing0114/AI_upscalers/resolve/9a3087ad5adc4f52e9de3e19b75c4c5df3efb56b/4x_IllustrationJaNai_V3detail_DAT2_28k_bf16.safetensors",
+      "page": "https://huggingface.co/easygoing0114/AI_upscalers",
+      "bytes": 139793020,
+      "sha256": "eb9faf6a37de81406765e0c99e76ad7dafe67e4877f32e186085ac277a0e6181",
+      "access": "public-at-verification",
+      "license": "see-author-license",
+      "note": "公开社区转换文件；原作者及原始发布为 https://github.com/the-database/MangaJaNai/releases/tag/3.0.0 ，遵守作者模型许可。"
+    }
+  ],
+  "manualFeatures": {
+    "deepseek": {
+      "defaultEnabled": false,
+      "reason": "固定角色LoRA不是标准依赖；推荐使用自动发现的Anima LoRA，不自动寻找或改名替代角色文件。"
+    }
+  }
+}
