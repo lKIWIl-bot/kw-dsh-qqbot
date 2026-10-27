@@ -4,3 +4,6 @@
 *.json text eol=lf
 *.md text eol=lf
 *.cmd text eol=crlf
+
+# Signed extension files must retain exact bytes on every platform
+addons/video/** -text
