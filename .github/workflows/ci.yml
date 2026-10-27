@@ -5,6 +5,12 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Use canonical Windows temporary directory
+        shell: pwsh
+        run: |
+          $tempRoot = node -p "require('fs').realpathSync(process.env.RUNNER_TEMP)"
+          "TEMP=$tempRoot" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "TMP=$tempRoot" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -23,6 +29,12 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      - name: Use canonical Windows temporary directory
+        shell: pwsh
+        run: |
+          $tempRoot = node -p "require('fs').realpathSync(process.env.RUNNER_TEMP)"
+          "TEMP=$tempRoot" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "TMP=$tempRoot" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
