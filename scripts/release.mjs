@@ -38,7 +38,16 @@ async function main(){
  for(const relative of files){const target=path.join(stage,addon?relative.slice('addons/video/'.length):relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(root,relative),target);}
  const directory=path.join(root,'dist');fs.mkdirSync(directory,{recursive:true});const archive=path.join(directory,name+'-'+randomUUID().slice(0,8)+'.zip');
  const tar=process.platform==='win32'?path.join(process.env.SystemRoot||'C:/Windows','System32/tar.exe'):'tar';
- const result=spawnSync(tar,['-a','-cf',archive,name],{cwd:stageParent,stdio:'inherit',windowsHide:true});if(result.status!==0)throw Error('Archive build failed; staged sources retained at '+stageParent);
+ let result=spawnSync(tar,['-a','-cf',archive,name],{cwd:stageParent,stdio:'inherit',windowsHide:true});
+ if(result.status!==0&&process.platform==='win32'){
+  const script='Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::CreateFromDirectory($env:KW_RELEASE_SOURCE,$env:KW_RELEASE_ARCHIVE,[System.IO.Compression.CompressionLevel]::Optimal,$true)';
+  for(const shell of ['pwsh.exe','powershell.exe']){
+   if(fs.existsSync(archive))fs.unlinkSync(archive);
+   result=spawnSync(shell,['-NoProfile','-NonInteractive','-Command',script],{cwd:stageParent,stdio:'inherit',windowsHide:true,env:{...process.env,KW_RELEASE_SOURCE:stage,KW_RELEASE_ARCHIVE:archive}});
+   if(result.status===0)break;
+  }
+ }
+ if(result.status!==0)throw Error('Archive build failed: '+(result.error?.code??result.status)+'; staged sources retained at '+stageParent);
  const digest=createHash('sha256').update(fs.readFileSync(archive)).digest('hex');fs.writeFileSync(archive+'.sha256',digest+'  '+path.basename(archive)+'\n');
  // Stage is retained for extraction/comparison checks; it contains public sources only.
  console.log(JSON.stringify({archive,sha256:digest,files:files.length,stagedSources:stage}));
