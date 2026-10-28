@@ -1,0 +1,89 @@
+{
+  "id": "web-media",
+  "version": "0.1.1",
+  "coreVersion": "0.1.1",
+  "apiVersion": 1,
+  "entry": "src/web-media.mjs",
+  "files": [
+    {
+      "path": "src/web-media.mjs",
+      "sha256": "66630734197c0179752c193af1114c8f85c2c5fe3d55a9bbf4d2c2d985b9e631"
+    },
+    {
+      "path": "src/web-media-fetch.mjs",
+      "sha256": "574dac09950006a572dc72775ca5859ecf2bb3042f599aebb6ee72136535e528"
+    },
+    {
+      "path": "src/web-media-hls.mjs",
+      "sha256": "e683db8b315175fe3446dfb2f63d0866407422c9f7b4d16e3be5b347c3dbf099"
+    },
+    {
+      "path": "src/web-media-names.mjs",
+      "sha256": "15b2067ecee311d92ed569864921e847931fb554afdf2a20ae0ea8c3810b3087"
+    },
+    {
+      "path": "src/web-media-archive-worker.mjs",
+      "sha256": "bf493f2b417bce9ced52e90162dc7df9571364cbc52b92641948b0afdd2659a7"
+    },
+    {
+      "path": "src/web-media-restore-worker.mjs",
+      "sha256": "a9e79e9b1db1b16c8b3724d5afe69b04d82a69c2dc1e614b683e609a9778931b"
+    },
+    {
+      "path": "src/web-media-restore.mjs",
+      "sha256": "79a11583e15021a07911ccfa8dfa64694ccfca5d44903a5d284d7d01c9935b15"
+    },
+    {
+      "path": "src/web-media-zip64.mjs",
+      "sha256": "d9655ee04d923fb74c42d06c91280cddec20ec845a6446f592abc3a07565366f"
+    },
+    {
+      "path": "src/web-fetch-result.mjs",
+      "sha256": "ae7527612c88868f96fea005dd1d07a02021da5925a8d3481f529df25de0154d"
+    },
+    {
+      "path": "src/safe-fetch.js",
+      "sha256": "9e93089c368bc19525a4f4e3d1530107fd5f85bc9b94db5415cfcd852d49a15a"
+    },
+    {
+      "path": "src/comfy-archive.mjs",
+      "sha256": "412c164d30225d2f0ec16592625cce77a94a698b38f6fee3b15a8c19a093b48b"
+    },
+    {
+      "path": "src/comfy-delivery.mjs",
+      "sha256": "fbce1641ab74f1cd078f358f8133910722e7ed4de0961d82370110346d4f771a"
+    },
+    {
+      "path": "tests/web-media.test.mjs",
+      "sha256": "4845e0739c5116095b812cc905bde903c1a83fd9a28e842cbf9d03eb36282c9c"
+    },
+    {
+      "path": "tests/web-media-batch.test.mjs",
+      "sha256": "c9c846c598531dd046e0ceb85ae07c65ea828c051f01c48a6b95231b173cd5ef"
+    },
+    {
+      "path": "tests/web-media-large.test.mjs",
+      "sha256": "957cdbaffa5207e3ba78fcae4af53aab13929eb88d1758324469170d6a21a806"
+    },
+    {
+      "path": "tests/web-media-restore.test.mjs",
+      "sha256": "704b4974c64ef8f9369109853fee27ee071c5ff60bd77007c5019c355b5929d4"
+    },
+    {
+      "path": "README.md",
+      "sha256": "6e73bc26c7547feeb6ec4f848046b43547b8a26d80c7899ec1c2e474ace4a5a2"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "3d3577ffdda5eba8669b06d883928f4710b25134957ea6aaff6ce5d61ee11df8"
+    },
+    {
+      "path": "NOTICE.md",
+      "sha256": "66cb304d809b5cbdd78496b3e7e6a0e424b1a6c18582b026e0b70c6814fd7d26"
+    },
+    {
+      "path": "src/public-dns.mjs",
+      "sha256": "fb8acf90bcf54c8587059e2e3cf20edfee631e7a2f0e2a18316f8c1603a1fec5"
+    }
+  ]
+}

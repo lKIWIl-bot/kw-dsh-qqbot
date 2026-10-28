@@ -1,4 +1,4 @@
-"""Whole-image super-resolution first; bounded overlap tiles only on OOM."""
+"""Selectable tiled or full-image super-resolution with bounded OOM fallback."""
 import torch
 import torch.nn.functional as F
 import comfy.utils
@@ -7,12 +7,12 @@ from comfy import model_management
 class DshIllustrationUpscale:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required":{"upscale_model":("UPSCALE_MODEL",),"image":("IMAGE",),"scale":("INT",{"default":2,"min":2,"max":4,"step":2}),"tile":("INT",{"default":256,"min":128,"max":256,"step":128}),"processing":(["full-first","tiled"],)}}
+        return {"required":{"upscale_model":("UPSCALE_MODEL",),"image":("IMAGE",),"scale":("INT",{"default":2,"min":2,"max":4,"step":2}),"tile":("INT",{"default":256,"min":128,"max":256,"step":128}),"processing":(["tiled","full-first"],)}}
     RETURN_TYPES=("IMAGE",)
     FUNCTION="upscale"
     CATEGORY="DSH/upscale"
 
-    def upscale(self,upscale_model,image,scale,tile=256,processing='full-first'):
+    def upscale(self,upscale_model,image,scale,tile=256,processing='tiled'):
         if scale not in (2,4) or tile not in (128,256) or image.shape[0]!=1:
             raise ValueError("高清任务须逐张处理，倍率2或4，分块128或256")
         if upscale_model.scale!=4:

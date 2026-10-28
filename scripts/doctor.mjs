@@ -1,4 +1,5 @@
-import {installedVideo} from './extension-lib.mjs';
+import {installedVideo,installedExtension} from './extension-lib.mjs';
+import {validateUpscaleOptions} from '../qq-bridge-enhanced-v1.0.0/src/upscale-options.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -18,6 +19,11 @@ export async function checkDeployment({offline=false,lorasOnly=false,rootPath=ro
   try{const url=new URL(c.snowluma?.[key]);if(!(key==='wsUrl'?['ws:','wss:']:['http:','https:']).includes(url.protocol))throw Error();if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname))report.warnings.push('OneBot配置使用非本机地址，请确认访问控制');}catch{report.errors.push('OneBot '+key+'无效');}
  }
  if(!c.snowluma?.accessToken)report.warnings.push('OneBot令牌为空，请与QQ后端保持一致并确认访问控制');
+ if(c.webMedia?.enabled===true){
+  try{if(!installedExtension('web-media',rootPath))report.errors.push('web-media扩展未安装；请先安装或停用webMedia.enabled');else report.checks.push('下载扩展逐文件校验通过（未下载或发送）');}catch(e){report.errors.push('下载扩展校验失败：'+e.message);}
+  if(!c.comfyChat?.archivePassword||c.comfyChat.archivePassword==='change-me')report.errors.push('下载功能请设置本机comfyChat.archivePassword，或重新运行首次setup');
+  if(c.webMedia.ffmpegPath&&!fs.existsSync(c.webMedia.ffmpegPath))report.warnings.push('FFmpeg路径不存在；m3u8合并不可用，其他直链下载可独立使用');
+ }
  if(c.comfyChat?.enabled||lorasOnly){
   const feature=c.comfyChat.features??{};
   try{const url=new URL(c.comfyChat.url);if(!['http:','https:'].includes(url.protocol))throw Error();}catch{report.errors.push('Comfy地址无效');}
@@ -26,7 +32,10 @@ export async function checkDeployment({offline=false,lorasOnly=false,rootPath=ro
   const templates=[];
   if(feature.image!==false)templates.push(c.comfyChat.workflowPath||'image-workflow/qqbot.api.json');
   if(feature.video){try{if(!installedVideo(rootPath))report.errors.push('video扩展未安装；请先安装扩展或停用features.video');else templates.push('extensions/video/video-workflow/qqbot-video.api.json');}catch(error){report.errors.push('video扩展校验失败：'+error.message);}}
-  if(feature.upscale)templates.push('image-workflow/qqbot-upscale-2k.api.json','image-workflow/qqbot-upscale-4k.api.json');
+  if(feature.upscale){
+   try{const options=validateUpscaleOptions(JSON.parse(fs.readFileSync(path.join(rootPath,'image-workflow/upscale.json'),'utf8')));report.checks.push('高清模式：'+options.processing+'，分块'+options.tile+'；显存说明见docs/UPSCALE.md');if(options.processing==='full-first')report.warnings.push('高清全图优先有较高显存峰值，8GB建议node scripts/upscale.mjs tiled；蓝屏无法保证回退');}catch(e){report.errors.push(e.message);}
+   templates.push('image-workflow/qqbot-upscale-2k.api.json','image-workflow/qqbot-upscale-4k.api.json');
+  }
   const graphs=[];let availableLoras=[];
   for(const relative of templates){try{let graph=JSON.parse(fs.readFileSync(path.resolve(rootPath,relative),'utf8'));if(Array.isArray(graph.nodes)){const {buildQqbotWorkflow}=await import('../qq-workspace/qqbot-workflow.mjs');graph=buildQqbotWorkflow(graph).prompt;}graphs.push({relative,graph});}catch{report.errors.push('工作流缺失或无效：'+relative);}}
   try{

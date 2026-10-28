@@ -1,0 +1,23 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import {createHash} from 'node:crypto';
+import {WEB_MEDIA_FILES,installExtension,installedExtension,setExtensionEnabled,removeExtension} from '../scripts/extension-lib.mjs';
+import {createOptionalWebMedia,downloadHelp} from '../qq-bridge-enhanced-v1.0.0/src/optional-web-media.mjs';
+test('下载扩展安装启停移除独立于Comfy与视频，保留白名单、密码和下载缓存',async t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'qq-web-addon-'));t.after(()=>{assert.equal(path.dirname(path.resolve(root)),path.resolve(os.tmpdir()));fs.rmSync(root,{recursive:true,force:true});});
+ const source=path.join(root,'source'),base=path.join(root,'base'),bridge=path.join(base,'qq-bridge-enhanced-v1.0.0');fs.mkdirSync(bridge,{recursive:true});fs.mkdirSync(source);
+ const files=WEB_MEDIA_FILES.map(name=>{const target=path.join(source,name),content='fixture '+name;fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,content);return {path:name,sha256:createHash('sha256').update(content).digest('hex')};});
+ fs.writeFileSync(path.join(source,'manifest.json'),JSON.stringify({id:'web-media',version:'0.1.0',coreVersion:'0.1.1',apiVersion:1,entry:'src/web-media.mjs',files}));
+ const c={ownerQQ:'100001',allow:{private:['100001'],groups:[]},comfyChat:{enabled:false,archivePassword:'fixture-password'}};const config=path.join(bridge,'config.json');fs.writeFileSync(config,JSON.stringify(c));
+ assert.equal(await createOptionalWebMedia({root:bridge,cfg:c}),null);await assert.rejects(createOptionalWebMedia({root:bridge,cfg:{webMedia:{enabled:true}}}),/未安装/);
+ installExtension('web-media',source,base);assert.deepEqual(JSON.parse(fs.readFileSync(config)),c);assert.ok(installedExtension('web-media',base));assert.equal(installedExtension('video',base),null);
+ setExtensionEnabled('web-media',true,base);assert.equal(JSON.parse(fs.readFileSync(config)).webMedia.enabled,true);assert.throws(()=>removeExtension('web-media',base),/停用/);
+ const cache=path.join(bridge,'state/web-media-cache');fs.mkdirSync(cache,{recursive:true});fs.writeFileSync(path.join(cache,'keep.txt'),'keep');
+ fs.writeFileSync(path.join(bridge,'state/web-media.json'),JSON.stringify({jobs:[{state:'downloading'}]}));assert.throws(()=>setExtensionEnabled('web-media',false,base),/下载队列尚未结束/);
+ fs.writeFileSync(path.join(bridge,'state/web-media.json'),JSON.stringify({jobs:[{state:'sent'}]}));setExtensionEnabled('web-media',false,base);removeExtension('web-media',base);
+ assert.equal(installedExtension('web-media',base),null);assert.equal(fs.readFileSync(path.join(cache,'keep.txt'),'utf8'),'keep');const after=JSON.parse(fs.readFileSync(config));delete after.webMedia;assert.deepEqual(after,c);
+ assert.match(downloadHelp(),/下载文件/);assert.doesNotMatch(downloadHelp(),/加密抓取/);assert.match(downloadHelp(true),/清除抓取缓存/);
+});

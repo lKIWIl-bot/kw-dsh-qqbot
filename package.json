@@ -1,6 +1,6 @@
 {
   "name": "kw-dsh-qqbot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "license": "MIT",
@@ -25,6 +25,10 @@
     "extensions": "node scripts/extensions.mjs",
     "release:video": "node scripts/release.mjs --addon video",
     "test:video": "node scripts/test-video.mjs",
-    "release:source": "node scripts/release.mjs --source"
+    "release:source": "node scripts/release.mjs --source",
+    "upscale": "node scripts/upscale.mjs",
+    "release:download": "node scripts/release.mjs --addon web-media",
+    "test:download": "node scripts/test-addons.mjs web-media",
+    "test:addons": "node scripts/test-addons.mjs all"
   }
 }

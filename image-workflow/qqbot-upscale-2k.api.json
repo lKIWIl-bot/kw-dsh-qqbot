@@ -24,7 +24,7 @@
       ],
       "scale": 2,
       "tile": 256,
-      "processing": "full-first"
+      "processing": "tiled"
     }
   },
   "5": {

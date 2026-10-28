@@ -13,7 +13,7 @@ export function parseArchivePreview(event,{botId}={}){
  return {messageId:replies.length?String(replies[0].data.id):null};
 }
 
-export function createArchivePreviews({stateDir,owner,notify,getMessage,getPrivateHistory,loadImages,sendImages,recall,log=()=>{},now=Date.now,schedule=setTimeout,unschedule=clearTimeout}){
+export function createArchivePreviews({stateDir,owner,notify,getMessage,getPrivateHistory,loadImages,sendImages,loadMedia,sendMedia,validMediaName=()=>false,recall,log=()=>{},now=Date.now,schedule=setTimeout,unschedule=clearTimeout}){
  const file=path.join(stateDir,'archive-preview-requests.json');let requests=[];
  if(fs.existsSync(file)){
   const saved=JSON.parse(fs.readFileSync(file,'utf8'));
@@ -32,18 +32,20 @@ export function createArchivePreviews({stateDir,owner,notify,getMessage,getPriva
   const eventKey=key+':'+eventId;if(requests.some(r=>r.eventKey===eventKey))return true;
   const request={eventKey,key,actorQQ:actor,at:now(),status:'checking'};
   requests.push(request);if(requests.length>512)requests=requests.slice(-512);save();
-  let sent=false;
+  let sent=false,media;
   try{
    guard();
    const raw=await getQuotedBotMessage({key,messageId:command.messageId,botId,getMessage,getPrivateHistory});
    const files=raw.message?.filter(s=>s?.type==='file')??[];
    if(files.length!==1)throw Error('请引用机器人按规则发送的图片压缩文件。');
    const name=String(files[0].data?.name??files[0].data?.file_name??files[0].data?.filename??files[0].data?.file??'');
-   if(!/^(?:[a-f0-9]{10}|images-[a-f0-9-]{36})\.z删ip$/i.test(name))throw Error('该文件不是机器人按规则发送的图片压缩包。');
-   const images=await loadImages(name);
+   if(!validMediaName(name)&&!/^(?:[a-f0-9]{10}|images-[a-f0-9-]{36})\.z删ip$/i.test(name))throw Error('该文件不是机器人按规则发送的图片压缩包。');
+   media=await loadMedia?.(name,{key,quoted:raw,actorQQ:actor});
+   if(!media&&!/^(?:[a-f0-9]{10}|images-[a-f0-9-]{36})\.z删ip$/i.test(name))throw Error('该文件不是已登记的机器人抓取压缩包。');
+   const images=media?null:await loadImages(name);
    guard();if(String(owner())!==actor)throw Error('管理员身份已变更，未发送。');
    request.status='sending';save();
-   const receipt=await sendImages(images,key,actor);sent=true;
+   const receipt=media?await sendMedia(media,key,actor):await sendImages(images,key,actor);sent=true;
    if(!validId(receipt?.messageId))throw Error('未取得图片发送回执');
    request.messageId=String(receipt.messageId);request.status='sent';save();
    try{const entry=recalls.add({key,messageId:receipt.messageId,actorQQ:actor,delayMs:90000});request.dueAt=entry.dueAt;save();}
@@ -58,7 +60,7 @@ export function createArchivePreviews({stateDir,owner,notify,getMessage,getPriva
    log('解压预览未完成：'+String(error?.message??error).slice(0,300));
    const text=String(error?.message??'');
    await notify(key,uncertain?'图片发送回执未确认，不会自动重发；如已收到，请手动撤回。':/^(只能撤回|无法确认|无法核对|请引用|该文件不是|压缩包|管理员身份)/.test(text)?text:'解压未完成，请检查本地压缩包缓存或QQ接口。');
-  }
+  }finally{media?.release?.();}
   return true;
  }
  return {handle,complete:(key,id)=>recalls.complete(key,id),close:()=>recalls.close()};

@@ -7,3 +7,5 @@
 
 # Signed extension files must retain exact bytes on every platform
 addons/video/** -text
+
+addons/web-media/** -text

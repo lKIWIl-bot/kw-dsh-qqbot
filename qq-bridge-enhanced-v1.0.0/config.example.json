@@ -348,5 +348,9 @@
       "directories": [],
       "defaultStrength": 0.8
     }
+  },
+  "webMedia": {
+    "enabled": false,
+    "ffmpegPath": ""
   }
 }

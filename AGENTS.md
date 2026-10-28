@@ -14,3 +14,8 @@
 - 正式版生成范围仅Anima、LoRA和高清。video为独立扩展，不默认安装或下载其模型；只有用户需要图生视频时才读取EXTENSIONS.md并按步骤安装。安装、启停、移除均先结束任务并停止桥接，不改共享模型和现有QQ权限。
 
 - addons/video是扩展开发源，不是已安装扩展；运行时只加载extensions/video。不要为使测试通过在用户运行目录自动安装或开启视频。npm run test:video使用隔离副本。
+
+- 高清依赖就绪后先读docs/UPSCALE.md。0.1.1新包默认tiled；8GB先小图、单张2K，显存表为预留估算而非实测保证。不擅自改为full-first、不并发GPU验证，遇蓝屏停止重试并查转储。切换用scripts/upscale.mjs同步配置与模板。
+- web-media为可选下载扩展，安装前读EXTENSIONS.md和配套README，运行时仅加载extensions/web-media；不得从addons自动安装或启用。安装不改白名单，不复制自用密码、路径、FFmpeg二进制或缓存。旧0.1.0主包先升级；下载工具启停后重载QQ MCP。无下载需求时不装、不要求Comfy或FFmpeg。
+
+- 无需再部署h-D-ACE/dsh-qq。该项目是已保留署名的上游源码来源，不能让用户先装一套原桥接再装本项目；DSH本体与NapCat/Comfy等外部依赖按各自说明准备。

@@ -1,3 +1,4 @@
+import * as optionalWebMedia from '../src/optional-web-media.mjs';
 import * as roleCard from '../src/role-card.js';
 import * as wakeContext from '../src/wake-context.mjs';
 // Execute the real bridge initialization/functions against temporary files and fake peers.
@@ -181,7 +182,7 @@ export async function bridgeHarness({ config = {}, savedState, files = {}, globa
     SnowLumaWebSocketClient: FakeBot, text: (s) => s,
     discoverDshLaunchToken: () => '', unwrap, createTurnCollector,
     ...markdown, ...sensitive, ...wait, ...safeFetch, ...forward, ...slang, ...sticker, ...stickerLimits,
-    ...roleCard, ...wakeContext, ...modelPrices, ...tokenLedger, ...voiceLib, ...stateAcl, ...presetPrompt, ...bridgeExt, ...groupReplyPolicy,
+    ...optionalWebMedia, ...roleCard, ...wakeContext, ...modelPrices, ...tokenLedger, ...voiceLib, ...stateAcl, ...presetPrompt, ...bridgeExt, ...groupReplyPolicy,
     // ACL 收紧会 spawn icacls 去改**真实**文件系统；测试不该做这件事（同理见下面的
     // cleanupTemp / processAudioVolume 桩）。桩成成功，让 hardenStateDirAcl 走正常分支。
     hardenDir: () => ({ ok: true, detail: 'stub' }),

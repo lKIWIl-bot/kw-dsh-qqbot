@@ -48,3 +48,20 @@ node scripts/manage.mjs start
 ## 开发与离线测试
 
 源码仓库的addons/video是扩展开发源，运行时只加载经安装的extensions/video。直接克隆源码仍默认使用精简正式版。npm test验证基础版；npm run test:video会创建隔离副本并安装视频源码，执行合并离线测试，不改现有配置或调用真实GPU。仅有正式包时，可用node scripts/test-video.mjs --from 扩展解压目录测试。
+
+# 网页下载可选扩展（0.1.1起）
+
+下载独立kw-dsh-qqbot-web-media扩展包。先结束任务、停止桥接并备份配置，然后运行：
+
+```powershell
+node scripts/extensions.mjs install web-media --from '扩展包解压目录'
+node scripts/extensions.mjs enable web-media
+node scripts/manage.mjs doctor --offline
+node scripts/manage.mjs start
+```
+
+重载DSH的QQ MCP或保存后重启DSH。启用后/help展示下载指令，/help 管理展示抓取模式与缓存指令。仅安装不会启用；旧0.1.0主包须先升级。完整功能、来源限制、配置密码、FFmpeg、4GiB单文件与16GiB缓存预算见扩展README（安装后位于extensions/web-media/README.md）。下载不使用Comfy显存；不需要video扩展或L2权限。群内需真实@，白名单不变。
+
+停止桥接后可执行disable web-media及remove web-media；下载/发送未结束时拒绝变更，移除保留下载状态和缓存。下载源码在addons/web-media，运行时只加载extensions/web-media；npm run test:download单独验证，npm run test:addons验证下载和视频共存，均使用隔离副本。
+
+0.1.1兼容原video API v1扩展。高清的全图/分块选择属于主包配置，无需另装扩展，见[高清模式](docs/UPSCALE.md)。

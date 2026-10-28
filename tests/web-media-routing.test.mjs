@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {bridgeHarness} from '../qq-bridge-enhanced-v1.0.0/scripts/audit-bridge-harness.mjs';
+const BOT='1000000002',OWNER='1000000001',USER='100001',GROUP='10001234';
+const text=value=>({type:'text',data:{text:value}}),at=()=>({type:'at',data:{qq:BOT}});
+test('实际消息入口：下载默认关闭，开启后只接真实@与白名单，帮助按权限展示',async t=>{
+ const commands=[],grants=[];
+ const service={noteRequest:r=>grants.push(r),isCommand:s=>/^\/(下载图片|正常抓取)/.test(s),command:async r=>{commands.push(r);return true;},close(){}};
+ const h=await bridgeHarness({config:{ownerQQ:OWNER,admin:{allowL3:false},allow:{private:[OWNER,USER],groups:[GROUP]},groupReply:{onlyAddressed:true},webMedia:{enabled:true}},globals:{createOptionalWebMedia:async()=>service}});
+ await h.initControllerOnce('chat');h.setMode('chat');h.setBotIdentity(BOT,'鲸鱼');t.after(async()=>{h.ext.controller.stop();await h.close();});
+ let event=0;const incoming=(kind,id,who,message)=>h.handleIncoming(kind,id,{self_id:BOT,user_id:who,message_id:++event,message,sender:{nickname:'测试用户'}},h.cfg);
+ await incoming('group',GROUP,USER,[text('/下载图片 https://example.com/a')]);
+ await incoming('group',GROUP,USER,[text('鲸鱼，/下载图片 https://example.com/a')]);assert.equal(commands.length,0);
+ await incoming('group','10009999',USER,[at(),text('/下载图片 https://example.com/a')]);assert.equal(commands.length,0);
+ await incoming('group',GROUP,USER,[at(),text('/下载图片 https://example.com/a')]);assert.equal(commands.length,1);assert.equal(commands[0].directed,true);
+ await incoming('private',USER,USER,[text('/下载图片 https://example.com/a')]);assert.equal(commands.length,2);
+ await incoming('private',USER,USER,[text('/help')]);assert.ok(h.calls.sent.some(s=>String(s.text).includes('/下载文件')));assert.ok(!h.calls.sent.some(s=>String(s.text).includes('/加密抓取')));
+ await incoming('private',OWNER,OWNER,[text('/help 管理')]);assert.ok(h.calls.sent.some(s=>String(s.id)===OWNER&&String(s.text).includes('/清除抓取缓存')));
+ assert.equal(h.calls.prompts.length,0);assert.ok(grants.some(r=>r.directed===false));
+});

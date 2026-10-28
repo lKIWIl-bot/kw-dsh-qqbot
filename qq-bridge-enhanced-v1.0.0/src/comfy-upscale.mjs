@@ -1,3 +1,4 @@
+import {validateUpscaleOptions} from './upscale-options.mjs';
 import {COMFY_URL} from './runtime-config.mjs';
 import fs from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
@@ -10,7 +11,7 @@ export const UPSCALE_CONFIG=fileURLToPath(new URL('../../image-workflow/upscale.
 export const MAX_HD_IMAGE_BYTES=64*1048576;
 export function loadUpscaleConfig(){
  const c=JSON.parse(readFileSync(UPSCALE_CONFIG,'utf8'));
- if(c.version!==1||c.model!=='4x_IllustrationJaNai_V3detail_DAT2_28k_bf16.safetensors'||c.tile!==256)throw Error('高清配置无效');return c;
+ return validateUpscaleOptions(c);
 }
 export function upscaleImageExtension(bytes){
  if(!Buffer.isBuffer(bytes)||bytes.length<24||bytes.length>MAX_HD_IMAGE_BYTES)throw Error('高清原图需为64MiB以内的PNG/JPEG/WebP');

@@ -53,6 +53,8 @@ async function start(kind){
 async function stop(){
  const queue=path.join(bridge,'state','comfy-chat.json');
  if(fs.existsSync(queue)&&JSON.parse(fs.readFileSync(queue,'utf8')).jobs.some(j=>!['sent','failed','cancelled','interrupted','delivery-unknown'].includes(j.state)))throw Error('生成或发送队列尚未结束，请等待，或由管理员先执行 /清理管线');
+ const downloads=path.join(bridge,'state','web-media.json');
+ if(fs.existsSync(downloads)&&JSON.parse(fs.readFileSync(downloads,'utf8')).jobs.some(j=>['queued','downloading','sending'].includes(j.state)))throw Error('下载或发送尚未结束，请先等待');
  for(const kind of ['bridge','console']){const record=loadRecord(kind);if(ownProcess(record)){process.kill(record.pid,'SIGTERM');console.log('已停止此项目 '+kind);}else console.log(kind+' 没有可确认归属的运行进程，未执行停止。');}
 }
 async function status(){

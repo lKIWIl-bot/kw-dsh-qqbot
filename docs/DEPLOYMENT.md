@@ -74,3 +74,15 @@ node scripts/manage.mjs stop
 从零部署请先读[外部组件索引](EXTERNALS.md)，再按[DSH](DSH.md)、[NapCat](NAPCAT.md)、[Comfy](COMFY.md)对应步骤执行。已有环境先检查再复用。
 
 开启或关闭comfyChat.enabled后，请在DSH中重新加载QQ MCP服务，或完全退出并重启DSH；桥接也需重启读取新配置。仅重启桥接不会刷新DSH已缓存的工具列表。
+
+## 高清模式与显存
+
+高清仍为可选功能。0.1.1新包默认直接分块，8GB显卡先验证512原图到2K；全图优先可手动选择。两模式的工作缓冲预留、额外开销、切换命令与分块原理见[高清与显存](UPSCALE.md)。512全图估算约4.5GiB、1024全图约18GiB；256分块约1.13GiB、128分块约0.28GiB，均不是实际总显存，还须加模型、CUDA与整图缓存，不能当作硬件保证。蓝屏需查转储，不能以OOM回退替代驱动排查。
+
+## 网页下载扩展
+
+网页图片、视频及文件下载属于独立web-media包，主包默认不包含下载实现，也不默认启用。无需Comfy、GPU或L2；HLS合并额外需要FFmpeg。先升级到0.1.1主包，再按[扩展说明](../EXTENSIONS.md)安装、启用并重载DSH的QQ MCP。其缓存、权限与磁盘需求见扩展README，安装不开放新群或用户。
+
+## 是否需要额外部署dsh-qq
+
+**不需要另外克隆、安装或启动[h-D-ACE/dsh-qq](https://github.com/h-D-ACE/dsh-qq)。** kw-dsh-qqbot已包含所需的QQ桥接源码、预设/MCP安装工具及本项目扩展接口；该链接用于说明上游来源，不是额外运行依赖。仍需部署DeepSeek Harness本体、Node.js、QQ后端（如NapCat），生图/高清另需ComfyUI与相应模型。已有同账号桥接先停用或迁移配置，避免同时运行两套自动回复。

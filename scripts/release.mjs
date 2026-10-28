@@ -26,27 +26,31 @@ export function checkRelease(){
 }
 async function main(){
  const baseFiles=checkRelease(),addon=process.argv.includes('--addon'),source=process.argv.includes('--source');if(addon&&source)throw Error('Choose addon or source');
- const {inspectVideoDirectory}=await import('./extension-lib.mjs');const video=(addon||source)?inspectVideoDirectory(path.join(root,'addons/video')):null;if(addon&&!video)throw Error('video扩展源码不存在');
- const videoFiles=video?['manifest.json',...video.manifest.files.map(f=>f.path)].map(f=>'addons/video/'+f):[];
+ const {EXTENSION_IDS,inspectExtensionDirectory}=await import('./extension-lib.mjs');
+ const addonIndex=process.argv.indexOf('--addon'),addonId=addon?process.argv[addonIndex+1]:null;
+ if(addon&&!EXTENSION_IDS.includes(addonId))throw Error('--addon须为video或web-media');
+ const selected=addon?[addonId]:source?EXTENSION_IDS:[];
+ const videoFiles=selected.flatMap(id=>{const item=inspectExtensionDirectory(path.join(root,'addons',id),id);return ['manifest.json',...item.manifest.files.map(f=>f.path)].map(f=>'addons/'+id+'/'+f);});
  const files=addon?videoFiles:source?[...baseFiles,...videoFiles]:baseFiles;
  if(addon||source){for(const f of videoFiles){const s=fs.readFileSync(path.join(root,f),'utf8');if(/(?:[A-Z]:[/\\]|sk-[A-Za-z0-9_-]{24,})/.test(s))throw Error('扩展包含本机路径或凭据：'+f);}}
  if(process.argv.includes('--check')){console.log('Release source checks passed: '+files.length+' files');return;}
  const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')),version=pkg.version;
  if(!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(pkg.name))throw Error('Invalid project name');
- const name=pkg.name+(addon?'-video':source?'-source':'')+'-'+version;
+ const name=pkg.name+(addon?'-'+addonId:source?'-source':'')+'-'+version;
  const stageParent=fs.mkdtempSync(path.join(os.tmpdir(),'dsh-qq-release-')),stage=path.join(stageParent,name);fs.mkdirSync(stage);
- for(const relative of files){const target=path.join(stage,addon?relative.slice('addons/video/'.length):relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(root,relative),target);}
+ for(const relative of files){const target=path.join(stage,addon?relative.slice(('addons/'+addonId+'/').length):relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(root,relative),target);}
  const directory=path.join(root,'dist');fs.mkdirSync(directory,{recursive:true});const archive=path.join(directory,name+'-'+randomUUID().slice(0,8)+'.zip');
- const tar=process.platform==='win32'?path.join(process.env.SystemRoot||'C:/Windows','System32/tar.exe'):'tar';
- let result=spawnSync(tar,['-a','-cf',archive,name],{cwd:stageParent,stdio:'inherit',windowsHide:true});
- if(result.status!==0&&process.platform==='win32'){
-  const script='Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::CreateFromDirectory($env:KW_RELEASE_SOURCE,$env:KW_RELEASE_ARCHIVE,[System.IO.Compression.CompressionLevel]::Optimal,$true)';
+ // The Windows ZIP API writes UTF-8 names and retains hidden files; local tar
+ // can emit ACP filenames without the UTF-8 flag, unlike the CI fallback.
+ let result;
+ if(process.platform==='win32'){
+  const script='Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::CreateFromDirectory($env:KW_RELEASE_SOURCE,$env:KW_RELEASE_ARCHIVE,[System.IO.Compression.CompressionLevel]::Optimal,$true,[System.Text.Encoding]::UTF8)';
   for(const shell of ['pwsh.exe','powershell.exe']){
    if(fs.existsSync(archive))fs.unlinkSync(archive);
    result=spawnSync(shell,['-NoProfile','-NonInteractive','-Command',script],{cwd:stageParent,stdio:'inherit',windowsHide:true,env:{...process.env,KW_RELEASE_SOURCE:stage,KW_RELEASE_ARCHIVE:archive}});
    if(result.status===0)break;
   }
- }
+ }else result=spawnSync('tar',['-a','-cf',archive,name],{cwd:stageParent,stdio:'inherit'});
  if(result.status!==0)throw Error('Archive build failed: '+(result.error?.code??result.status)+'; staged sources retained at '+stageParent);
  const digest=createHash('sha256').update(fs.readFileSync(archive)).digest('hex');fs.writeFileSync(archive+'.sha256',digest+'  '+path.basename(archive)+'\n');
  // Stage is retained for extraction/comparison checks; it contains public sources only.

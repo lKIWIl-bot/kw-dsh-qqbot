@@ -7,5 +7,5 @@
     4096
   ],
   "source": "https://github.com/the-database/MangaJaNai/releases/tag/3.0.0",
-  "processing": "full-first"
+  "processing": "tiled"
 }
